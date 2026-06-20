@@ -15,8 +15,14 @@ class CartPage(BasePage):
         return len(self.driver.find_elements(*self.CART_ITEMS))
 
     def click_checkout(self):
-        """Click the checkout button to proceed with the purchase."""
+        """Click checkout button and wait for the checkout page to load."""
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        from selenium.webdriver.common.by import By
         self.click(self.CHECKOUT_BUTTON)
+        WebDriverWait(self.driver, 15).until(
+            EC.visibility_of_element_located((By.ID, "first-name"))
+        )
 
     def click_continue_shopping(self):
         """Click the continue shopping button to return to the inventory page."""
