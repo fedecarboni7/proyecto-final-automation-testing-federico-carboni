@@ -27,9 +27,19 @@ class InventoryPage(BasePage):
         return count
 
     def add_first_product_to_cart(self):
-        """Click the add-to-cart button on the first product item."""
+        """Add the first product to the cart and wait until cart badge updates."""
         self.logger.info("Adding first product to cart")
         self.click(self.ADD_TO_CART_BUTTON)
+
+        from selenium.webdriver.support.ui import WebDriverWait
+        from selenium.webdriver.support import expected_conditions as EC
+        from selenium.webdriver.common.by import By
+        WebDriverWait(self.driver, 10).until(
+            EC.text_to_be_present_in_element(
+                (By.CLASS_NAME, "shopping_cart_badge"), "1"
+            )
+        )
+        self.logger.info("Product added to cart successfully")
 
     def get_cart_count(self):
         """Return the cart badge text (item count) or '0' if the badge is not visible."""
