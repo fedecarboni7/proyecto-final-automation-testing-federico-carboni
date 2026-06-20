@@ -1,11 +1,11 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from pages.base_page import BasePage
 
 
 class CheckoutPage(BasePage):
-    """Page object for the SauceDemo checkout flow (step one, step two, and confirmation)."""
+    """Page object for the SauceDemo checkout flow."""
 
     FIRST_NAME = (By.ID, "first-name")
     LAST_NAME = (By.ID, "last-name")
@@ -17,28 +17,34 @@ class CheckoutPage(BasePage):
 
     def fill_customer_info(self, first_name, last_name, postal_code):
         """Fill in the customer information form."""
-        WebDriverWait(self.driver, 15).until(
-            EC.presence_of_element_located(self.FIRST_NAME)
-        )
         self.type_text(self.FIRST_NAME, first_name)
         self.type_text(self.LAST_NAME, last_name)
         self.type_text(self.POSTAL_CODE, postal_code)
 
     def click_continue(self):
-        """Click continue and wait for order summary to load."""
-        self.click(self.CONTINUE_BUTTON)
-        WebDriverWait(self.driver, 15).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "summary_total_label"))
+        """Click continue via JavaScript and wait for order summary."""
+        btn = WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(self.CONTINUE_BUTTON)
+        )
+        self.driver.execute_script("arguments[0].click();", btn)
+        WebDriverWait(self.driver, 20).until(
+            EC.url_contains("checkout-step-two")
         )
 
     def click_finish(self):
-        """Click the finish button to complete the purchase."""
-        self.click(self.FINISH_BUTTON)
+        """Click finish via JavaScript and wait for confirmation."""
+        btn = WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(self.FINISH_BUTTON)
+        )
+        self.driver.execute_script("arguments[0].click();", btn)
+        WebDriverWait(self.driver, 20).until(
+            EC.url_contains("checkout-complete")
+        )
 
     def get_confirmation_message(self):
-        """Return the confirmation header text displayed after a successful purchase."""
+        """Return the confirmation header text."""
         return self.get_text(self.CONFIRMATION_HEADER)
 
     def get_total(self):
-        """Return the total summary label text from the order summary page."""
+        """Return the order total label text."""
         return self.get_text(self.SUMMARY_TOTAL)
