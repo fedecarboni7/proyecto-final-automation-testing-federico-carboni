@@ -1,0 +1,6 @@
+[
+  {"username": "standard_user", "password": "secret_sauce", "expected_result": "success", "description": "valid standard user"},
+  {"username": "locked_out_user", "password": "secret_sauce", "expected_result": "error", "description": "locked out user"},
+  {"username": "problem_user", "password": "secret_sauce", "expected_result": "success", "description": "problem user"},
+  {"username": "invalid_user", "password": "wrong_pass", "expected_result": "error", "description": "invalid credentials"}
+]
