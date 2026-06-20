@@ -20,11 +20,19 @@ class CartPage(BasePage):
         return len(self.driver.find_elements(*self.CART_ITEMS))
 
     def click_checkout(self):
-        """Click checkout and wait until the checkout form is ready."""
-        self.click(self.CHECKOUT_BUTTON)
-        WebDriverWait(self.driver, 20).until(
-            EC.presence_of_element_located((By.ID, "first-name"))
+        """Click checkout button via JavaScript and wait for checkout form."""
+        # Esperar que el botón esté presente y hacer click via JavaScript
+        checkout_btn = WebDriverWait(self.driver, 15).until(
+            EC.presence_of_element_located(self.CHECKOUT_BUTTON)
         )
+        self.driver.execute_script("arguments[0].click();", checkout_btn)
+        self.logger.info("Clicked checkout button via JavaScript")
+        
+        # Esperar que la URL cambie a checkout
+        WebDriverWait(self.driver, 20).until(
+            EC.url_contains("checkout-step-one")
+        )
+        self.logger.info("Checkout step one page loaded")
 
     def click_continue_shopping(self):
         """Click the continue shopping button to return to the inventory page."""

@@ -1,4 +1,6 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from pages.base_page import BasePage
 
 
@@ -15,8 +17,6 @@ class CheckoutPage(BasePage):
 
     def fill_customer_info(self, first_name, last_name, postal_code):
         """Fill in the customer information form."""
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
         WebDriverWait(self.driver, 15).until(
             EC.presence_of_element_located(self.FIRST_NAME)
         )
@@ -26,9 +26,6 @@ class CheckoutPage(BasePage):
 
     def click_continue(self):
         """Click continue and wait for order summary to load."""
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
-        from selenium.webdriver.common.by import By
         self.click(self.CONTINUE_BUTTON)
         WebDriverWait(self.driver, 15).until(
             EC.visibility_of_element_located((By.CLASS_NAME, "summary_total_label"))
