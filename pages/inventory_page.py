@@ -16,12 +16,12 @@ class InventoryPage(BasePage):
     LOGOUT_LINK = (By.ID, "logout_sidebar_link")
 
     def is_loaded(self):
-        """Return True if the product list is visible, indicating the page loaded."""
+        """Return True if the product list is visible."""
         self.logger.info("Checking if inventory page is loaded")
         return self.is_element_visible(self.PRODUCT_LIST)
 
     def get_product_count(self):
-        """Return the number of product items displayed on the page."""
+        """Return the number of product items displayed."""
         count = len(self.driver.find_elements(*self.PRODUCT_ITEMS))
         self.logger.info(f"Product count: {count}")
         return count
@@ -30,10 +30,6 @@ class InventoryPage(BasePage):
         """Add the first product to the cart and wait until cart badge updates."""
         self.logger.info("Adding first product to cart")
         self.click(self.ADD_TO_CART_BUTTON)
-
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
-        from selenium.webdriver.common.by import By
         WebDriverWait(self.driver, 10).until(
             EC.text_to_be_present_in_element(
                 (By.CLASS_NAME, "shopping_cart_badge"), "1"
@@ -42,7 +38,7 @@ class InventoryPage(BasePage):
         self.logger.info("Product added to cart successfully")
 
     def get_cart_count(self):
-        """Return the cart badge text (item count) or '0' if the badge is not visible."""
+        """Return the cart badge text or '0' if not visible."""
         if self.is_element_visible(self.CART_BADGE):
             count = self.get_text(self.CART_BADGE)
         else:
@@ -51,22 +47,20 @@ class InventoryPage(BasePage):
         return count
 
     def go_to_cart(self):
-        """Click the cart link to navigate to the cart page."""
+        """Click the cart link and wait for cart page to load."""
         self.logger.info("Navigating to cart")
         self.click(self.CART_LINK)
+        WebDriverWait(self.driver, 15).until(
+            EC.url_contains("cart")
+        )
 
     def logout(self):
-        """Log out by navigating directly to the login page after clearing session storage,
-        bypassing the burger menu animation that is unreliable in headless mode."""
+        """Log out by clearing session storage and navigating to login."""
         self.logger.info("Logging out via direct navigation")
-
-        from selenium.webdriver.support.ui import WebDriverWait
-        from selenium.webdriver.support import expected_conditions as EC
-        from selenium.webdriver.common.by import By
-
-        self.driver.execute_script("window.localStorage.clear(); window.sessionStorage.clear();")
+        self.driver.execute_script(
+            "window.localStorage.clear(); window.sessionStorage.clear();"
+        )
         self.driver.get("https://www.saucedemo.com")
-
         WebDriverWait(self.driver, 10).until(
             EC.visibility_of_element_located((By.ID, "login-button"))
         )
