@@ -1,4 +1,3 @@
-import datetime
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -51,9 +50,12 @@ def pytest_runtest_makereport(item, call):
 
             driver.save_screenshot(screenshot_path)
 
-            abs_screenshot_path = os.path.abspath(screenshot_path)
+            import base64
+            with open(screenshot_path, "rb") as img_file:
+                encoded = base64.b64encode(img_file.read()).decode("utf-8")
+
             from pytest_html import extras
             if hasattr(report, "extras"):
-                report.extras.append(extras.image(abs_screenshot_path))
+                report.extras.append(extras.image(encoded, mime_type="image/png"))
             else:
-                report.extras = [extras.image(abs_screenshot_path)]
+                report.extras = [extras.image(encoded, mime_type="image/png")]
